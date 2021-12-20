@@ -164,10 +164,11 @@ func newJobTemplate(ctx context.Context, clientset *kubernetes.Clientset, namesp
 			return jobSpec, ownerRef, err
 		}
 		ownerRef := metav1.OwnerReference{
-			APIVersion: "batch/v1",
-			Kind:       "CronJob",
-			Name:       cj.GetName(),
-			UID:        cj.GetUID(),
+			APIVersion:         "batch/v1",
+			Kind:               "CronJob",
+			Name:               cj.GetName(),
+			UID:                cj.GetUID(),
+			BlockOwnerDeletion: boolToPtr(true),
 		}
 		return cj.Spec.JobTemplate.Spec, ownerRef, nil
 	}
@@ -177,10 +178,11 @@ func newJobTemplate(ctx context.Context, clientset *kubernetes.Clientset, namesp
 		return jobSpec, ownerRef, err
 	}
 	ownerRef = metav1.OwnerReference{
-		APIVersion: "batch/v1beta1",
-		Kind:       "CronJob",
-		Name:       cj.GetName(),
-		UID:        cj.GetUID(),
+		APIVersion:         "batch/v1beta1",
+		Kind:               "CronJob",
+		Name:               cj.GetName(),
+		UID:                cj.GetUID(),
+		BlockOwnerDeletion: boolToPtr(true),
 	}
 	return cj.Spec.JobTemplate.Spec, ownerRef, nil
 }
@@ -281,4 +283,8 @@ func createJob(f *os.File, job *batchv1.Job) error {
 		return err
 	}
 	return nil
+}
+
+func boolToPtr(b bool) *bool {
+	return &b
 }
